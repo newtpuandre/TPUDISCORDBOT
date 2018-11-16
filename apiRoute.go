@@ -33,7 +33,7 @@ func InfoRoute(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(h, strconv.FormatInt(crutime, 10))
 	token := fmt.Sprintf("%x", h.Sum(nil))
 
-	t, _ := template.ParseFiles("index.gtpl")
+	t, _ := template.ParseFiles("web/index.gtpl")
 	t.Execute(w, token)
 }
 
@@ -51,7 +51,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(h, strconv.FormatInt(crutime, 10))
 		token := fmt.Sprintf("%x", h.Sum(nil))
 
-		t, _ := template.ParseFiles("upload.gtpl")
+		t, _ := template.ParseFiles("web/upload.gtpl")
 		t.Execute(w, token)
 
 	} else {
