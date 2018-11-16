@@ -105,10 +105,8 @@ func addCommands() {
 	var newInfo AbsoluteRoute
 	Info = newInfo
 
-	Info.Message = "Coded with Golang ❤️\nhttps://discord-bot-tpu.herokuapp.com/upload to upload your own sounds! PM Tpu for approval"
-
 	var addSound CommandRoute
-	addSound.Command = "https://discord-bot-tpu.herokuapp.com/upload to upload your own sounds! PM Tpu for approval"
+	addSound.Command = commandText
 	Info.Commands = append(Info.Commands, addSound)
 
 	for i := range DBSoundList {
