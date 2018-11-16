@@ -32,6 +32,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if strings.HasPrefix(m.Content, "!github") {
+		s.ChannelMessageSend(m.ChannelID, "https://github.com/newtpuandre/TPUDISCORDBOT")
+	}
+
 	if strings.HasPrefix(m.Content, "!commands") {
 		addCommands()
 		var textBuild = ""
