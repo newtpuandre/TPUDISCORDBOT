@@ -1,0 +1,12 @@
+/*
+package main
+
+//This is the database connectionString
+var connectionString = "username:password@(serverip:port)/database"
+
+//This is the discord connection token
+var DiscToken = "exampleToken"
+
+
+
+*/
