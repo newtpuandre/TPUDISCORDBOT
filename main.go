@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,14 +11,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
-
-func determineListenAddress() (string, error) { //Inorder to get the port heroku assigns us
-	port := os.Getenv("PORT")
-	if port == "" {
-		return "", fmt.Errorf("$PORT not set")
-	}
-	return ":" + port, nil
-}
 
 func main() {
 	//Setup router
