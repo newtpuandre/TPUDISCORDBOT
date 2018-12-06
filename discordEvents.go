@@ -100,11 +100,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 				if err != nil {
 					log.Println("Error playing sound:", err)
+
+					//Clean up server info
+					inUseServers[m.GuildID] = ""
+					currentlyPlaying[m.GuildID] = ""
 				}
 
 				return
 			}
 		}
+
+		//Clean up server info if command is used without user in voice.
+		inUseServers[m.GuildID] = ""
+		currentlyPlaying[m.GuildID] = ""
 
 	}
 
