@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -49,7 +48,7 @@ func main() {
 	log.Println("TPU Discord bot is now running.  Press CTRL-C to exit.")
 
 	//spesify IP and port if you want to run anything besides heroku
-	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
+	//log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
@@ -62,5 +61,5 @@ func main() {
 func cleanup(GuildID string) {
 	inUseServers[GuildID] = ""
 	currentlyPlaying[GuildID] = ""
-	log.Println("Cleaning up server:", GuildID)
+	log.Println("Setting server as AVAILABLE:", GuildID)
 }

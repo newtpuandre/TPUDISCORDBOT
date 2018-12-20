@@ -26,97 +26,117 @@ func ready(s *discordgo.Session, event *discordgo.Ready) {
 // message is created on any channel that the autenticated bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
+	channel, err := s.Channel(m.ChannelID)
+	if err != nil {
+		log.Println("Error while trying to retrieve channel in messageCreate(), " + err.Error())
+	}
+
 	// Ignore all messages created by the bot itself
 	// This isn't required in this specific example but it's a good practice.
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, "!github") {
-		s.ChannelMessageSend(m.ChannelID, "https://github.com/newtpuandre/TPUDISCORDBOT")
-		return
-	}
-
-	if strings.HasPrefix(m.Content, "!commands") {
-		addCommands()
-		var textBuild = ""
-		for i := 0; i < len(Info.Commands); i++ {
-			textBuild += Info.Commands[i].Command
-			textBuild += "\n"
+	if channel.Type == discordgo.ChannelTypeDM {
+		if strings.HasPrefix(strings.ToLower(m.Content), "!enable") {
+			enableCommand(s, m)
+			return
 		}
-		textBuild += "😂😂"
-		s.ChannelMessageSend(m.ChannelID, string(len(Info.Commands))+textBuild)
-		return
-	}
-
-	if strings.Contains(m.Content, "😂") {
-		s.ChannelMessageSend(m.ChannelID, "😂😂")
-		return
-	}
-
-	//Stops whatever sound that is playing on message origin server
-	if strings.HasPrefix(m.Content, "!stop") {
-		currentlyPlaying[m.GuildID] = ""
-		return
-	}
-
-	// check if the message is a command
-	if strings.HasPrefix(m.Content, "!") {
-
-		if inUseServers[m.GuildID] != "" {
-			log.Println("Server ", m.GuildID, " is possibly being command spammed")
+		if strings.HasPrefix(strings.ToLower(m.Content), "!disable") {
+			disableCommand(s, m)
 			return
 		}
 
-		//Set the server as "Busy"
-		inUseServers[m.GuildID] = m.GuildID
-		log.Println("Setting server as busy:", m.GuildID)
+	}
 
-		var actualCommand = strings.Trim(m.Content, "!")
-
-		insertCommandLog(actualCommand, m.Author.Username, m.GuildID)
-
-		// Find the channel that the message came from.
-		c, err := s.State.Channel(m.ChannelID)
-		if err != nil {
-			log.Println("Could not find channel")
+	if channel.Type != discordgo.ChannelTypeDM {
+		if strings.HasPrefix(m.Content, "!github") {
+			s.ChannelMessageSend(m.ChannelID, "https://github.com/newtpuandre/TPUDISCORDBOT")
 			return
 		}
 
-		// Find the guild for that channel.
-		g, err := s.State.Guild(c.GuildID)
-		if err != nil {
-			log.Println("Could not find guild")
+		if strings.HasPrefix(m.Content, "!commands") {
+			addCommands()
+			var textBuild = ""
+			for i := 0; i < len(Info.Commands); i++ {
+				textBuild += Info.Commands[i].Command
+				textBuild += "\n"
+			}
+			textBuild += "😂😂"
+			s.ChannelMessageSend(m.ChannelID, string(len(Info.Commands))+textBuild)
 			return
 		}
 
-		// Look for the message sender in that guild's current voice states.
-		for _, vs := range g.VoiceStates {
-			if vs.UserID == m.Author.ID {
+		if strings.Contains(m.Content, "😂") {
+			s.ChannelMessageSend(m.ChannelID, "😂😂")
+			return
+		}
 
-				//Set as currently playing
-				currentlyPlaying[m.GuildID] = m.GuildID
-				err = playSound(s, g.ID, vs.ChannelID, actualCommand)
+		//Stops whatever sound that is playing on message origin server
+		if strings.HasPrefix(m.Content, "!stop") {
+			currentlyPlaying[m.GuildID] = ""
+			return
+		}
 
-				//Clean up server info
-				cleanup(m.GuildID)
+		// check if the message is a command
+		if strings.HasPrefix(m.Content, "!") {
 
-				if err != nil {
-					log.Println("Error playing sound:", err)
+			if inUseServers[m.GuildID] != "" {
+				log.Println("Server ", m.GuildID, " is possibly being command spammed")
+				return
+			}
 
-					//Clean up server info
-					cleanup(m.GuildID)
-				}
+			//Set the server as "Busy"
+			inUseServers[m.GuildID] = m.GuildID
+			log.Println("Setting server as BUSY:", m.GuildID)
+
+			var actualCommand = strings.Trim(m.Content, "!")
+
+			insertCommandLog(actualCommand, m.Author.Username, m.GuildID)
+
+			// Find the channel that the message came from.
+			c, err := s.State.Channel(m.ChannelID)
+			if err != nil {
+				log.Println("Could not find channel")
 
 				return
 			}
+
+			// Find the guild for that channel.
+			g, err := s.State.Guild(c.GuildID)
+			if err != nil {
+				log.Println("Could not find guild")
+
+				return
+			}
+
+			// Look for the message sender in that guild's current voice states.
+			for _, vs := range g.VoiceStates {
+				if vs.UserID == m.Author.ID {
+
+					//Set as currently playing
+					currentlyPlaying[m.GuildID] = m.GuildID
+					err = playSound(s, g.ID, vs.ChannelID, actualCommand)
+
+					//Clean up server info
+					cleanup(m.GuildID)
+
+					if err != nil {
+						log.Println("Error playing sound:", err)
+
+						//Clean up server info
+						cleanup(m.GuildID)
+					}
+
+					return
+				}
+			}
+
+			//Clean up server info
+			cleanup(m.GuildID)
+			return
 		}
-
-		//Clean up server info
-		cleanup(m.GuildID)
-		return
 	}
-
 }
 
 // This function will be called every time a new

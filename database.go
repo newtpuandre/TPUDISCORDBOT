@@ -101,6 +101,53 @@ func insertCommandLog(command string, user string, serverid string) {
 
 }
 
+func DBenableCommand(command string) (err error) {
+	db, err := sql.Open("mysql", connectionString)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer db.Close()
+
+	stmtIns, err := db.Prepare("UPDATE sounds SET ENABLED = 1 WHERE COMMAND=?") // ? = placeholder
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
+
+	_, err = stmtIns.Exec(command)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func DBdisableCommand(command string) (err error) {
+	db, err := sql.Open("mysql", connectionString)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer db.Close()
+
+	stmtIns, err := db.Prepare("UPDATE sounds SET ENABLED = 0 WHERE COMMAND=?") // ? = placeholder
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
+
+	_, err = stmtIns.Exec(command)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
 func addCommands() {
 	var newInfo AbsoluteRoute
 	Info = newInfo
