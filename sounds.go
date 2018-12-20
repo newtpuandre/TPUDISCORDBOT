@@ -39,6 +39,7 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 	}
 
 	if DBSoundList[index].enabled == "0" {
+		s.ChannelMessageSend(channelID, "That command is disabled.")
 		return
 	}
 
@@ -56,7 +57,7 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 
 	// Send the buffer data.
 	for _, buff := range DBSoundList[index].buffer {
-		if currentlyPlaying[guildID] == "" {
+		if currentlyPlaying[guildID] == "" { //If !stop command is sent
 			break
 		}
 		vc.OpusSend <- buff
@@ -75,10 +76,11 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 }
 
 func loadFromList() {
+	DBSoundList = DBSoundList[:]
 	loadFromDB()
 
 	for i := range DBSoundList {
-		if DBSoundList[i].enabled != "0" && DBSoundList[i].loaded != "1" {
+		if DBSoundList[i].loaded != "1" && DBSoundList[i].enabled != "0" {
 			loadSound(DBSoundList[i].filepath, DBSoundList[i].command)
 			DBSoundList[i].loaded = "1"
 			log.Println("Loaded " + DBSoundList[i].command)
@@ -118,7 +120,7 @@ func addToList(obj DBSound) {
 			log.Println("Holy fucking moly. Something went wrong")
 		}
 
-	} else if obj.enabled == "1" {
+	} else {
 		//If it dosent exist add it.
 		DBSoundList = append(DBSoundList, obj)
 		log.Println("added " + obj.command + " to the list")
@@ -181,4 +183,21 @@ func loadSound(path string, command string) error {
 		tempBuffer = append(tempBuffer, InBuf)
 
 	}
+}
+
+func soundExist(command string) bool {
+	var index int
+	index = -1
+	for i := range DBSoundList {
+		if DBSoundList[i].command == command {
+			index = i
+		}
+	}
+
+	if index != -1 {
+		return true
+	}
+
+	return false
+
 }

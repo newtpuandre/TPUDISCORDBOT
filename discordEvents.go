@@ -47,6 +47,21 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
+		if strings.HasPrefix(strings.ToLower(m.Content), "!upload") {
+			uploadAudioInfo(s, m)
+			return
+		}
+
+		if len(m.Attachments) > 0 {
+			attachments(s, m)
+			return
+		}
+
+		if strings.HasPrefix(strings.ToLower(m.Content), "!commandname") {
+			commandName(s, m)
+			return
+		}
+
 	}
 
 	if channel.Type != discordgo.ChannelTypeDM {
