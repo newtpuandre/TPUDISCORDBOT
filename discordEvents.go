@@ -34,6 +34,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.HasPrefix(m.Content, "!github") {
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/newtpuandre/TPUDISCORDBOT")
+		return
 	}
 
 	if strings.HasPrefix(m.Content, "!commands") {
@@ -45,20 +46,22 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		textBuild += "😂😂"
 		s.ChannelMessageSend(m.ChannelID, string(len(Info.Commands))+textBuild)
-
+		return
 	}
 
 	if strings.Contains(m.Content, "😂") {
 		s.ChannelMessageSend(m.ChannelID, "😂😂")
+		return
 	}
 
 	//Stops whatever sound that is playing on message origin server
 	if strings.HasPrefix(m.Content, "!stop") {
 		currentlyPlaying[m.GuildID] = ""
+		return
 	}
 
 	// check if the message is a command
-	if strings.HasPrefix(m.Content, "!") && !strings.Contains(m.Content, "commands") && !strings.Contains(m.Content, "!stop") {
+	if strings.HasPrefix(m.Content, "!") {
 
 		if inUseServers[m.GuildID] != "" {
 			log.Println("Server ", m.GuildID, " is possibly being command spammed")
@@ -67,6 +70,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		//Set the server as "Busy"
 		inUseServers[m.GuildID] = m.GuildID
+		log.Println("Setting server as busy:", m.GuildID)
 
 		var actualCommand = strings.Trim(m.Content, "!")
 
@@ -75,14 +79,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		// Find the channel that the message came from.
 		c, err := s.State.Channel(m.ChannelID)
 		if err != nil {
-			// Could not find channel.
+			log.Println("Could not find channel")
 			return
 		}
 
 		// Find the guild for that channel.
 		g, err := s.State.Guild(c.GuildID)
 		if err != nil {
-			// Could not find guild.
+			log.Println("Could not find guild")
 			return
 		}
 
@@ -95,25 +99,22 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				err = playSound(s, g.ID, vs.ChannelID, actualCommand)
 
 				//Clean up server info
-				inUseServers[m.GuildID] = ""
-				currentlyPlaying[m.GuildID] = ""
+				cleanup(m.GuildID)
 
 				if err != nil {
 					log.Println("Error playing sound:", err)
 
 					//Clean up server info
-					inUseServers[m.GuildID] = ""
-					currentlyPlaying[m.GuildID] = ""
+					cleanup(m.GuildID)
 				}
 
 				return
 			}
 		}
 
-		//Clean up server info if command is used without user in voice.
-		inUseServers[m.GuildID] = ""
-		currentlyPlaying[m.GuildID] = ""
-
+		//Clean up server info
+		cleanup(m.GuildID)
+		return
 	}
 
 }
