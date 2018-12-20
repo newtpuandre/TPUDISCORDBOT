@@ -71,7 +71,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		if strings.HasPrefix(strings.ToLower(m.Content), "!upload") {
-			s.ChannelMessage(m.ChannelID, "Please DM me with the same command!")
+			s.ChannelMessageSend(m.ChannelID, "Please DM me with the same command!")
 			return
 		}
 
