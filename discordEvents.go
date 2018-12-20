@@ -70,6 +70,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
+		if strings.HasPrefix(strings.ToLower(m.Content), "!upload") {
+			s.ChannelMessage(m.ChannelID, "Please DM me with the same command!")
+			return
+		}
+
 		if strings.HasPrefix(m.Content, "!commands") {
 			addCommands()
 			var textBuild = ""
