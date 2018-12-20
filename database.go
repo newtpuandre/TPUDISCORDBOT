@@ -159,6 +159,9 @@ func addCommands() {
 	addSound.Command = "!github"
 	Info.Commands = append(Info.Commands, addSound)
 
+	addSound.Command = "!upload"
+	Info.Commands = append(Info.Commands, addSound)
+
 	for i := range DBSoundList {
 		var temp CommandRoute
 		if DBSoundList[i].enabled == "1" {
