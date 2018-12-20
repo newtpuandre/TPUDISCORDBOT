@@ -58,3 +58,9 @@ func main() {
 	// Cleanly close down the Discord session.
 	dg.Close()
 }
+
+func cleanup(GuildID string) {
+	inUseServers[GuildID] = ""
+	currentlyPlaying[GuildID] = ""
+	log.Println("Cleaning up server:", GuildID)
+}
