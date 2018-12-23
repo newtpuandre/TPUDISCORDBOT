@@ -15,12 +15,13 @@ import (
 )
 
 type commandUpload struct {
-	command  string
+	Command  string
 	URL      string
-	authorID string
+	AuthorID string
 }
 
-var commandUploadList []commandUpload
+//var commandUploadList []commandUpload
+var commandUploadList map[string]*commandUpload
 
 //func uploadAudio
 //This ^ function will take a file by DM and add it to the commands
@@ -55,11 +56,9 @@ func attachments(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	var temp commandUpload
 	temp.URL = m.Attachments[0].URL
-	temp.authorID = m.Author.ID
+	temp.AuthorID = m.Author.ID
+	*commandUploadList[m.Author.ID] = temp
 
-	commandUploadList = append(commandUploadList, temp)
-	log.Println(commandUploadList)
-	log.Println(m.Attachments[0].URL, m.Author.ID)
 }
 
 func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -72,7 +71,7 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(words) > 1 {
 		command := words[1]
 
-		if len(commandUploadList) < 1 {
+		if commandUploadList[m.Author.ID].AuthorID != m.Author.ID {
 			_, err = s.ChannelMessageSend(channel.ID, "Please upload a file first!")
 			return
 		}
@@ -89,34 +88,21 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		var index1 = -1
-		for i := range commandUploadList {
-			if commandUploadList[i].authorID == m.Author.ID {
-				index1 = i
-			}
-		}
+		commandUploadList[m.Author.ID].Command = command
 
-		if index1 == -1 {
-			_, err = s.ChannelMessageSend(channel.ID, "Please upload a file first!")
-			return
-		}
-
-		log.Println(commandUploadList[index1].command)
-		commandUploadList[index1].command = command
-
-		err = downloadFile("./sounds/"+commandUploadList[index1].command+".mp3", commandUploadList[index1].URL)
+		err = downloadFile("./sounds/"+commandUploadList[m.Author.ID].Command+".mp3", commandUploadList[m.Author.ID].URL)
 		if err != nil {
 			log.Println(err)
 		}
 
 		// Encoding a file and saving it to disk
-		var MP3Path = "./sounds/" + commandUploadList[index1].command + ".mp3"
+		var MP3Path = "./sounds/" + commandUploadList[m.Author.ID].Command + ".mp3"
 
 		encodeSession, err := dca.EncodeFile(MP3Path, dca.StdEncodeOptions)
 		// Make sure everything is cleaned up, that for example the encoding process if any issues happened isnt lingering around
 		encodeSession.Cleanup()
 
-		var fullpath = "./sounds/" + commandUploadList[index1].command + ".dca"
+		var fullpath = "./sounds/" + commandUploadList[m.Author.ID].Command + ".dca"
 
 		output, err := os.Create(fullpath)
 		if err != nil {
@@ -155,10 +141,17 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		loadFromList()
-	}
-	_, err = s.ChannelMessageSend(channel.ID, "Please PM TPU to enable the sound! :joy: :joy:")
-	if err != nil {
-		log.Println("Could not send message to discord " + err.Error())
+
+		_, err = s.ChannelMessageSend(channel.ID, "Please PM TPU to enable the sound! :joy: :joy:")
+		if err != nil {
+			log.Println("Could not send message to discord " + err.Error())
+		}
+
+	} else {
+		_, err = s.ChannelMessageSend(channel.ID, "Something went wrong. Please try again later")
+		if err != nil {
+			log.Println("Could not send message to discord " + err.Error())
+		}
 	}
 }
 

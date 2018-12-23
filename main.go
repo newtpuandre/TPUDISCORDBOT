@@ -8,17 +8,17 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
 )
 
 func main() {
 	//Setup router
-	router := mux.NewRouter().StrictSlash(true)
+	//router := mux.NewRouter().StrictSlash(true)
 
 	inUseServers = make(map[string]string)
 	currentlyPlaying = make(map[string]string)
+	commandUploadList = make(map[string]*commandUpload)
 
-	addRoutes(router)
+	//addRoutes(router)
 
 	loadFromList()
 
