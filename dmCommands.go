@@ -57,7 +57,7 @@ func attachments(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var temp commandUpload
 	temp.URL = m.Attachments[0].URL
 	temp.AuthorID = m.Author.ID
-	*commandUploadList[m.Author.ID] = temp
+	commandUploadList[m.Author.ID] = &temp
 
 }
 
