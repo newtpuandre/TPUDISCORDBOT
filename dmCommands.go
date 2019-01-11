@@ -226,6 +226,7 @@ func disableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func downloadFile(filepath string, url string) (err error) {
 
+	log.Println("Downloading file:",url)
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {

@@ -62,12 +62,16 @@ func loadFromDB() {
 			switch i {
 			case 0:
 				tempDBSound.id = value
+				log.Println(value)
 			case 1:
 				tempDBSound.filepath = value
+				log.Println(value)
 			case 2:
 				tempDBSound.command = value
+				log.Println(value)
 			case 3:
 				tempDBSound.enabled = value
+				log.Println(value)
 			}
 		}
 		addToList(tempDBSound)
