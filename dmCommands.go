@@ -49,7 +49,7 @@ func attachments(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	_, err = s.ChannelMessageSend(channel.ID, "File is sucessfully uploaded. Please use !commandname <your_name_here to give it a name! Example : !commandname jonas")
+	_, err = s.ChannelMessageSend(channel.ID, "File is sucessfully uploaded. Please use !commandname <your_name_here to give it a name! Example : !commandname jonas" + commandUploadList[m.Author.ID].URL)
 	if err != nil {
 		log.Println("Could not send message to discord  " + err.Error())
 	}
