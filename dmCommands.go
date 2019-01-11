@@ -90,6 +90,8 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		commandUploadList[m.Author.ID].Command = command
 
+		log.Println(commandUploadList[m.Author.ID].URL)
+
 		err = downloadFile("./sounds/"+commandUploadList[m.Author.ID].Command+".mp3", commandUploadList[m.Author.ID].URL)
 		if err != nil {
 			log.Println(err)
@@ -226,7 +228,6 @@ func disableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func downloadFile(filepath string, url string) (err error) {
 
-	log.Println("Downloading file:",url)
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
