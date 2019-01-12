@@ -10,7 +10,7 @@ import (
 func loadFromDB() {
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
-		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+		log.Println(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
 	defer db.Close()
 
@@ -18,12 +18,12 @@ func loadFromDB() {
 	// Execute the query
 	rows, err := db.Query("SELECT * FROM sounds")
 	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+		log.Println(err.Error()) // proper error handling instead of panic in your app
 	}
 	// Get column names
 	columns, err := rows.Columns()
 	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+		log.Println(err.Error()) // proper error handling instead of panic in your app
 	}
 
 	// Make a slice for the values
@@ -41,7 +41,7 @@ func loadFromDB() {
 		// get RawBytes from data
 		err = rows.Scan(scanArgs...)
 		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
+			log.Println(err.Error()) // proper error handling instead of panic in your app
 		}
 		var tempDBSound DBSound
 
@@ -53,7 +53,7 @@ func loadFromDB() {
 				// write the whole body at once
 				err = ioutil.WriteFile(tempDBSound.filepath, col, 0644)
 				if err != nil {
-					panic(err)
+					log.Println(err)
 				}
 			} else {
 				value = string(col)
@@ -62,16 +62,12 @@ func loadFromDB() {
 			switch i {
 			case 0:
 				tempDBSound.id = value
-				log.Println(value)
 			case 1:
 				tempDBSound.filepath = value
-				log.Println(value)
 			case 2:
 				tempDBSound.command = value
-				log.Println(value)
 			case 3:
 				tempDBSound.enabled = value
-				log.Println(value)
 			}
 		}
 		addToList(tempDBSound)

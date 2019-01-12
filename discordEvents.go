@@ -76,14 +76,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		if strings.HasPrefix(m.Content, "!commands") {
-			addCommands()
-			var textBuild = ""
-			for i := 0; i < len(Info.Commands); i++ {
-				textBuild += Info.Commands[i].Command
-				textBuild += "\n"
-			}
-			textBuild += "😂😂"
-			s.ChannelMessageSend(m.ChannelID, string(len(Info.Commands))+textBuild)
+			sendCommandsPM(s, m)
 			return
 		}
 
@@ -171,4 +164,20 @@ func guildCreate(s *discordgo.Session, event *discordgo.GuildCreate) {
 
 	log.Println("Connected to", event.Guild.Name, event.Guild.ID)
 
+}
+
+func sendCommandsPM(s *discordgo.Session, m *discordgo.MessageCreate) {
+	channel, err := s.UserChannelCreate(m.Author.ID)
+	if err != nil {
+		log.Println("Something went wrong whilst trying to create a DM, " + err.Error())
+	}
+
+	addCommands()
+	var textBuild = ""
+	for i := 0; i < len(Info.Commands); i++ {
+		textBuild += Info.Commands[i].Command
+		textBuild += "\n"
+	}
+	textBuild += "😂😂"
+	s.ChannelMessageSend(channel.ID, string(len(Info.Commands))+textBuild)
 }

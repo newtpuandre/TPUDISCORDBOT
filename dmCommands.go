@@ -102,7 +102,7 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		encodeSession, err := dca.EncodeFile(MP3Path, dca.StdEncodeOptions)
 		// Make sure everything is cleaned up, that for example the encoding process if any issues happened isnt lingering around
-		encodeSession.Cleanup()
+		defer encodeSession.Cleanup()
 
 		var fullpath = "./sounds/" + commandUploadList[m.Author.ID].Command + ".dca"
 
@@ -166,6 +166,11 @@ func enableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Println("Something went wrong whilst trying to create a DM, " + err.Error())
 	}
 
+	if m.Author.String() != "TPU#3255" {
+		s.ChannelMessageSend(channel.ID, "Only TPU can enable / Disable commands")
+		return
+	}
+
 	words := strings.Split(m.Content, " ")
 	if len(words) > 1 {
 
@@ -197,6 +202,11 @@ func disableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	channel, err := s.UserChannelCreate(m.Author.ID)
 	if err != nil {
 		log.Println("Something went wrong whilst trying to create a DM, " + err.Error())
+	}
+
+	if m.Author.String() != "TPU#3255" {
+		s.ChannelMessageSend(channel.ID, "Only TPU can enable / Disable commands")
+		return
 	}
 
 	words := strings.Split(m.Content, " ")
