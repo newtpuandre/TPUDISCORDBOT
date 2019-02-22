@@ -117,7 +117,7 @@ func addToList(obj DBSound) {
 		}
 
 		if index2 == -1 {
-			log.Println("Holy fucking moly. Something went wrong")
+			log.Println("Something went wrong")
 		}
 
 	} else {

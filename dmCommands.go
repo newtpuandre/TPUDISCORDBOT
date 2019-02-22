@@ -23,8 +23,6 @@ type commandUpload struct {
 //var commandUploadList []commandUpload
 var commandUploadList map[string]*commandUpload
 
-//func uploadAudio
-//This ^ function will take a file by DM and add it to the commands
 
 func uploadAudioInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	channel, err := s.UserChannelCreate(m.Author.ID)

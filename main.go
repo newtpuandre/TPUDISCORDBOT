@@ -11,14 +11,10 @@ import (
 )
 
 func main() {
-	//Setup router
-	//router := mux.NewRouter().StrictSlash(true)
 
 	inUseServers = make(map[string]string)
 	currentlyPlaying = make(map[string]string)
 	commandUploadList = make(map[string]*commandUpload)
-
-	//addRoutes(router)
 
 	loadFromList()
 
@@ -46,9 +42,6 @@ func main() {
 
 	// Wait here until CTRL-C or other term signal is received.
 	log.Println("TPU Discord bot is now running.  Press CTRL-C to exit.")
-
-	//spesify IP and port if you want to run anything besides heroku
-	//log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)

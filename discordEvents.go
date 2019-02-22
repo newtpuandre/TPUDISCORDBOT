@@ -105,8 +105,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			var actualCommand = strings.Trim(m.Content, "!")
 
-			insertCommandLog(actualCommand, m.Author.Username, m.GuildID)
-
 			// Find the channel that the message came from.
 			c, err := s.State.Channel(m.ChannelID)
 			if err != nil {

@@ -1,4 +1,8 @@
-/*
+/*	This should be a json file and be read on program launch
+	making it possible to change config without rebuilding the code
+
+*/
+
 package main
 
 //This is the database connectionString
@@ -9,5 +13,3 @@ var DiscToken = "exampleToken"
 
 //This is the first message shown when !commands are used
 var commandText = "test"
-
-*/
