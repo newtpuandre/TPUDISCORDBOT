@@ -53,7 +53,11 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 	time.Sleep(250 * time.Millisecond)
 
 	// Start speaking.
-	vc.Speaking(true)
+	err = vc.Speaking(true)
+	if err != nil {
+		vc.Disconnect()
+	}
+
 
 	// Send the buffer data.
 	for _, buff := range DBSoundList[index].buffer {
