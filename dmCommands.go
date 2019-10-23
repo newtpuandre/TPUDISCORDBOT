@@ -23,7 +23,6 @@ type commandUpload struct {
 //var commandUploadList []commandUpload
 var commandUploadList map[string]*commandUpload
 
-
 func uploadAudioInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	channel, err := s.UserChannelCreate(m.Author.ID)
 	if err != nil {

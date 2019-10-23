@@ -80,11 +80,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		if strings.Contains(m.Content, "😂") {
-			s.ChannelMessageSend(m.ChannelID, "😂😂")
-			return
-		}
-
 		//Stops whatever sound that is playing on message origin server
 		if strings.HasPrefix(m.Content, "!stop") {
 			currentlyPlaying[m.GuildID] = ""
