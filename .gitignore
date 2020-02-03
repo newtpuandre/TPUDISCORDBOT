@@ -13,3 +13,5 @@
 
 config.go
 sounds/*
+
+_debug_bin

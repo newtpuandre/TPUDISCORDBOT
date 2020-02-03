@@ -34,7 +34,6 @@ func main() {
 	// Register guildCreate as a callback for the guildCreate events.
 	dg.AddHandler(guildCreate)
 
-	// Open the websocket and begin listening.
 	err = dg.Open()
 	if err != nil {
 		log.Println("Error opening Discord session: ", err)

@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -58,7 +60,6 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 		vc.Disconnect()
 	}
 
-
 	// Send the buffer data.
 	for _, buff := range DBSoundList[index].buffer {
 		if currentlyPlaying[guildID] == "" { //If !stop command is sent
@@ -79,9 +80,50 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 	return nil
 }
 
-func loadFromList() {
+func loadFromDBList() {
 	DBSoundList = DBSoundList[:]
 	loadFromDB()
+
+	for i := range DBSoundList {
+		if DBSoundList[i].loaded != "1" && DBSoundList[i].enabled != "0" {
+			loadSound(DBSoundList[i].filepath, DBSoundList[i].command)
+			DBSoundList[i].loaded = "1"
+			log.Println("Loaded " + DBSoundList[i].command)
+		}
+	}
+}
+
+func loadFromList() {
+
+	DBSoundList = DBSoundList[:]
+
+	var files []string
+
+	root := "/sounds/"
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		files = append(files, path)
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	for id, file := range files {
+		if strings.Contains(file, "/sounds/") {
+			continue //Skip loop iteration if the file is the root directory.
+		}
+		var tempDBSound DBSound
+		tempDBSound.id = string(id)
+		tempDBSound.enabled = "1"
+		tempDBSound.filepath = file
+
+		tempCommandString := file[8:]                                     //Removes the path /sounds/
+		tempCommandString = strings.TrimSuffix(tempCommandString, ".dca") //Removes the file extension
+
+		tempDBSound.command = tempCommandString
+
+		addToList(tempDBSound)
+	}
 
 	for i := range DBSoundList {
 		if DBSoundList[i].loaded != "1" && DBSoundList[i].enabled != "0" {
