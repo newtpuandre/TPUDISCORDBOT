@@ -80,6 +80,14 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 	return nil
 }
 
+func loadSounds() {
+	if connectedToDB {
+		loadFromDBList()
+	} else {
+		loadFromList()
+	}
+}
+
 func loadFromDBList() {
 	DBSoundList = DBSoundList[:]
 	loadFromDB()
@@ -119,6 +127,10 @@ func loadFromList() {
 
 		tempCommandString := file[8:]                                     //Removes the path /sounds/
 		tempCommandString = strings.TrimSuffix(tempCommandString, ".dca") //Removes the file extension
+
+		if strings.Contains(tempCommandString, "!") {
+			tempCommandString = tempCommandString[1:] //Trim of the !
+		}
 
 		tempDBSound.command = tempCommandString
 

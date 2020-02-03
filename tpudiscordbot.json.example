@@ -1,0 +1,10 @@
+{
+ //This is the database connectionString
+ "ConnectionString": "username:password@(serverip:port)/database",
+
+ //This is the discord connection token
+ "DiscToken": "exampleToken",
+
+ //This is the first message shown when !commands are used
+ "CommandText": "test"
+}

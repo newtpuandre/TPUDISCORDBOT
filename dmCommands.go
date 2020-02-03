@@ -119,24 +119,26 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		db, err := sql.Open("mysql", connectionString)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		defer db.Close()
+		if connectedToDB {
+			db, err := sql.Open("mysql", config.ConnectionString)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			defer db.Close()
 
-		stmtIns, err := db.Prepare("INSERT INTO sounds(filename,command,file) VALUES( ?, ? ,?)") // ? = placeholder
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
+			stmtIns, err := db.Prepare("INSERT INTO sounds(filename,command,file) VALUES( ?, ? ,?)") // ? = placeholder
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
 
-		_, err = stmtIns.Exec(fullpath, command, b) // Insert tuples (i, i^2)
-		if err != nil {
-			log.Println(err)
-			return
+			_, err = stmtIns.Exec(fullpath, command, b) // Insert tuples (i, i^2)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
 
 		loadFromList()
@@ -174,7 +176,7 @@ func enableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if !soundExist(words[1]) {
 			_, err = s.ChannelMessageSend(channel.ID, "This command does not exist")
 			if err != nil {
-				log.Println("Could not send message to discord in manageAPIKey(), " + err.Error())
+				log.Println("Could not send message to discord, " + err.Error())
 			}
 			return
 		}
@@ -190,7 +192,7 @@ func enableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	_, err = s.ChannelMessageSend(channel.ID, "Enabled Command: "+words[1])
 	if err != nil {
-		log.Println("Could not send message to discord in manageAPIKey(), " + err.Error())
+		log.Println("Could not send message to discord, " + err.Error())
 	}
 	loadFromList()
 }
@@ -212,7 +214,7 @@ func disableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if !soundExist(words[1]) {
 			_, err = s.ChannelMessageSend(channel.ID, "This command does not exist")
 			if err != nil {
-				log.Println("Could not send message to discord in manageAPIKey(), " + err.Error())
+				log.Println("Could not send message to discord, " + err.Error())
 			}
 			return
 		}

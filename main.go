@@ -10,16 +10,20 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var connectedToDB = false
+
 func main() {
+
+	ConfigInit()
 
 	inUseServers = make(map[string]string)
 	currentlyPlaying = make(map[string]string)
 	commandUploadList = make(map[string]*commandUpload)
 
-	loadFromList()
+	loadSounds()
 
 	// Create a new Discord session using the provided bot token.
-	dg, err := discordgo.New("Bot " + DiscToken)
+	dg, err := discordgo.New("Bot " + config.DiscToken)
 	if err != nil {
 		log.Println("Error creating Discord session: ", err)
 		return

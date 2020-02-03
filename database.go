@@ -7,9 +7,9 @@ import (
 )
 
 func loadFromDB() {
-	db, err := sql.Open("mysql", connectionString)
+	db, err := sql.Open("mysql", config.ConnectionString)
 	if err != nil {
-		log.Println(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+		log.Println(err.Error())
 	}
 	defer db.Close()
 
@@ -73,7 +73,7 @@ func loadFromDB() {
 }
 
 func DBenableCommand(command string) (err error) {
-	db, err := sql.Open("mysql", connectionString)
+	db, err := sql.Open("mysql", config.ConnectionString)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -85,7 +85,7 @@ func DBenableCommand(command string) (err error) {
 		log.Println(err)
 		return err
 	}
-	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
+	defer stmtIns.Close()
 
 	_, err = stmtIns.Exec(command)
 	if err != nil {
@@ -97,7 +97,7 @@ func DBenableCommand(command string) (err error) {
 }
 
 func DBdisableCommand(command string) (err error) {
-	db, err := sql.Open("mysql", connectionString)
+	db, err := sql.Open("mysql", config.ConnectionString)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -109,7 +109,7 @@ func DBdisableCommand(command string) (err error) {
 		log.Println(err)
 		return err
 	}
-	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
+	defer stmtIns.Close()
 
 	_, err = stmtIns.Exec(command)
 	if err != nil {
@@ -117,25 +117,4 @@ func DBdisableCommand(command string) (err error) {
 		return err
 	}
 	return nil
-}
-
-func addCommands() {
-	var newInfo AbsoluteRoute
-	Info = newInfo
-
-	var addSound CommandRoute
-	addSound.Command = commandText
-	Info.Commands = append(Info.Commands, addSound)
-
-	addSound.Command = "!github"
-	Info.Commands = append(Info.Commands, addSound)
-
-	for i := range DBSoundList {
-		var temp CommandRoute
-		if DBSoundList[i].enabled == "1" {
-			temp.Command = "!" + DBSoundList[i].command
-			Info.Commands = append(Info.Commands, temp)
-		}
-	}
-
 }

@@ -173,3 +173,24 @@ func sendCommandsPM(s *discordgo.Session, m *discordgo.MessageCreate) {
 	textBuild += "😂😂"
 	s.ChannelMessageSend(channel.ID, string(len(Info.Commands))+textBuild)
 }
+
+func addCommands() {
+	var newInfo AbsoluteRoute
+	Info = newInfo
+
+	var addSound CommandRoute
+	addSound.Command = config.CommandText
+	Info.Commands = append(Info.Commands, addSound)
+
+	addSound.Command = "!github"
+	Info.Commands = append(Info.Commands, addSound)
+
+	for i := range DBSoundList {
+		var temp CommandRoute
+		if DBSoundList[i].enabled == "1" {
+			temp.Command = "!" + DBSoundList[i].command
+			Info.Commands = append(Info.Commands, temp)
+		}
+	}
+
+}

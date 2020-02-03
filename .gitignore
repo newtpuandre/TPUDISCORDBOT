@@ -14,4 +14,6 @@
 config.go
 sounds/*
 
-_debug_bin
+__debug_bin
+
+tpudiscordbot.json
