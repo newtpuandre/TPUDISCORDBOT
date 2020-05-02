@@ -119,7 +119,7 @@ func loadFromList() {
 func addToList(obj DBSound) {
 
 	for i := range DBSoundList {
-		if obj.Command == DBSoundList[i].Command {
+		if obj.Filepath == DBSoundList[i].Filepath {
 			return
 		}
 	}
