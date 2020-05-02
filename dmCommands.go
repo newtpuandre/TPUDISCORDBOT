@@ -155,6 +155,9 @@ func enableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			log.Println(err)
 		}*/
+
+		commandInput := words[1]
+		enableCommandInList(commandInput)
 	}
 
 	log.Println("Enabled command:", words[1])
@@ -193,6 +196,9 @@ func disableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			log.Println(err)
 		}*/
+		commandInput := words[1]
+		disableCommandInList(commandInput)
+
 	}
 
 	log.Println("Disabled command:", words[1])
@@ -232,4 +238,26 @@ func downloadFile(filepath string, url string) (err error) {
 	}
 
 	return nil
+}
+
+func enableCommandInList(command string) {
+
+	for i := range DBSoundList {
+		if command == DBSoundList[i].Command {
+			DBSoundList[i].Enabled = "1"
+		}
+	}
+
+	saveSoundsToJSON()
+
+}
+
+func disableCommandInList(command string) {
+	for i := range DBSoundList {
+		if command == DBSoundList[i].Command {
+			DBSoundList[i].Enabled = "0"
+		}
+	}
+
+	saveSoundsToJSON()
 }

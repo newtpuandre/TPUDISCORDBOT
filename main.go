@@ -18,7 +18,14 @@ func main() {
 	currentlyPlaying = make(map[string]string)
 	commandUploadList = make(map[string]*commandUpload)
 
+	//Load sounds
+	loadSoundsFromJSON()
+
+	//Load from filesystem
 	loadFromList()
+
+	//Save json file. May be some new sounds added
+	saveSoundsToJSON()
 
 	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + config.DiscToken)

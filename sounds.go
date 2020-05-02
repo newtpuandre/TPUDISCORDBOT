@@ -13,16 +13,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-//DBSound contains info about each sound
-type DBSound struct {
-	id       string   //obselete?
-	Filepath string   `json:"filepath"`
-	Command  string   `json:"command"`
-	Enabled  string   `json:"enabled"`
-	loaded   string   //obselete?
-	buffer   [][]byte //Obselete?
-}
-
 //DBSoundList is an array of DBSound items
 var DBSoundList []DBSound
 
@@ -128,41 +118,14 @@ func loadFromList() {
 
 func addToList(obj DBSound) {
 
-	var index int
-	index = -1
 	for i := range DBSoundList {
-		if obj.id == DBSoundList[i].id {
-			index = i
+		if obj.Command == DBSoundList[i].Command {
+			return
 		}
 	}
 
-	if index != -1 {
-		DBSoundList[index].Enabled = obj.Enabled
-		DBSoundList[index].Command = obj.Command
-
-		var index2 int
-		index2 = -1
-		for i := range DBSoundList {
-			if obj.Command == DBSoundList[i].Command {
-				index2 = i
-			}
-		}
-
-		if obj.Enabled == "1" {
-			DBSoundList[index2].Enabled = "1"
-		} else {
-			DBSoundList[index2].Enabled = "0"
-		}
-
-		if index2 == -1 {
-			log.Println("Something went wrong")
-		}
-
-	} else {
-		//If it dosent exist add it.
-		DBSoundList = append(DBSoundList, obj)
-		log.Println("added " + obj.Command + " to the list")
-	}
+	DBSoundList = append(DBSoundList, obj)
+	log.Println("added " + obj.Command + " to the list")
 
 }
 
