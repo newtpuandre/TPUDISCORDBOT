@@ -1,10 +1,8 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -75,7 +73,7 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		var index = -1
 		for i := range DBSoundList {
-			if DBSoundList[i].command == command {
+			if DBSoundList[i].Command == command {
 				index = i
 			}
 		}
@@ -111,35 +109,6 @@ func commandName(s *discordgo.Session, m *discordgo.MessageCreate) {
 		io.Copy(output, encodeSession)
 
 		os.Remove(MP3Path)
-
-		//Insert file into DB.
-		b, err := ioutil.ReadFile(fullpath) // just pass the file name
-		if err != nil {
-			log.Print(err)
-			return
-		}
-
-		if connectedToDB {
-			db, err := sql.Open("mysql", config.ConnectionString)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			defer db.Close()
-
-			stmtIns, err := db.Prepare("INSERT INTO sounds(filename,command,file) VALUES( ?, ? ,?)") // ? = placeholder
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
-
-			_, err = stmtIns.Exec(fullpath, command, b) // Insert tuples (i, i^2)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		}
 
 		loadFromList()
 
@@ -181,11 +150,11 @@ func enableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		commandInput := words[1]
+		/*commandInput := words[1]
 		err := DBenableCommand(commandInput)
 		if err != nil {
 			log.Println(err)
-		}
+		}*/
 	}
 
 	log.Println("Enabled command:", words[1])
@@ -219,11 +188,11 @@ func disableCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		commandInput := words[1]
+		/*commandInput := words[1]
 		err := DBdisableCommand(commandInput)
 		if err != nil {
 			log.Println(err)
-		}
+		}*/
 	}
 
 	log.Println("Disabled command:", words[1])

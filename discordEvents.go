@@ -187,8 +187,8 @@ func addCommands() {
 
 	for i := range DBSoundList {
 		var temp CommandRoute
-		if DBSoundList[i].enabled == "1" {
-			temp.Command = "!" + DBSoundList[i].command
+		if DBSoundList[i].Enabled == "1" {
+			temp.Command = "!" + DBSoundList[i].Command
 			Info.Commands = append(Info.Commands, temp)
 		}
 	}

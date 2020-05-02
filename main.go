@@ -10,8 +10,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var connectedToDB = false
-
 func main() {
 
 	ConfigInit()
@@ -20,7 +18,7 @@ func main() {
 	currentlyPlaying = make(map[string]string)
 	commandUploadList = make(map[string]*commandUpload)
 
-	loadSounds()
+	loadFromList()
 
 	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + config.DiscToken)

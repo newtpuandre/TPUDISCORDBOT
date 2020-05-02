@@ -15,13 +15,12 @@ import (
 
 //DBSound contains info about each sound
 type DBSound struct {
-	id       string
-	filepath string //Backwards compatibility
-	command  string
-	enabled  string
-	loaded   string
-	buffer   [][]byte
-	noplays  string
+	id       string   //obselete?
+	Filepath string   `json:"filepath"`
+	Command  string   `json:"command"`
+	Enabled  string   `json:"enabled"`
+	loaded   string   //obselete?
+	buffer   [][]byte //Obselete?
 }
 
 //DBSoundList is an array of DBSound items
@@ -31,7 +30,7 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 
 	var index = -1
 	for i := range DBSoundList {
-		if DBSoundList[i].command == command {
+		if DBSoundList[i].Command == command {
 			index = i
 		}
 	}
@@ -40,7 +39,7 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 		return
 	}
 
-	if DBSoundList[index].enabled == "0" {
+	if DBSoundList[index].Enabled == "0" {
 		s.ChannelMessageSend(channelID, "That command is disabled.")
 		return
 	}
@@ -80,34 +79,11 @@ func playSound(s *discordgo.Session, guildID, channelID string, command string) 
 	return nil
 }
 
-func loadSounds() {
-	if connectedToDB {
-		loadFromDBList()
-	} else {
-		loadFromList()
-	}
-}
-
-func loadFromDBList() {
-	DBSoundList = DBSoundList[:]
-	loadFromDB()
-
-	for i := range DBSoundList {
-		if DBSoundList[i].loaded != "1" && DBSoundList[i].enabled != "0" {
-			loadSound(DBSoundList[i].filepath, DBSoundList[i].command)
-			DBSoundList[i].loaded = "1"
-			log.Println("Loaded " + DBSoundList[i].command)
-		}
-	}
-}
-
 func loadFromList() {
-
-	DBSoundList = DBSoundList[:]
 
 	var files []string
 
-	root := "/sounds/"
+	root := "./sounds/"
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		files = append(files, path)
 		return nil
@@ -122,26 +98,30 @@ func loadFromList() {
 		}
 		var tempDBSound DBSound
 		tempDBSound.id = string(id)
-		tempDBSound.enabled = "1"
-		tempDBSound.filepath = file
+		tempDBSound.Enabled = "1"
+		tempDBSound.Filepath = file
 
-		tempCommandString := file[8:]                                     //Removes the path /sounds/
+		tempCommandString := strings.TrimLeft(file, "sounds/") //Removes the path /sounds/
+		if strings.Contains(tempCommandString, "\\") {
+			tempCommandString = strings.TrimLeft(tempCommandString, "\\")
+		}
 		tempCommandString = strings.TrimSuffix(tempCommandString, ".dca") //Removes the file extension
 
 		if strings.Contains(tempCommandString, "!") {
-			tempCommandString = tempCommandString[1:] //Trim of the !
+			//tempCommandString = tempCommandString[0:] //Trim of the !
+			tempCommandString = strings.TrimLeft(tempCommandString, "!")
 		}
 
-		tempDBSound.command = tempCommandString
+		tempDBSound.Command = tempCommandString
 
 		addToList(tempDBSound)
 	}
 
 	for i := range DBSoundList {
-		if DBSoundList[i].loaded != "1" && DBSoundList[i].enabled != "0" {
-			loadSound(DBSoundList[i].filepath, DBSoundList[i].command)
+		if DBSoundList[i].loaded != "1" && DBSoundList[i].Enabled != "0" {
+			loadSound(DBSoundList[i].Filepath, DBSoundList[i].Command)
 			DBSoundList[i].loaded = "1"
-			log.Println("Loaded " + DBSoundList[i].command)
+			log.Println("Loaded " + DBSoundList[i].Command)
 		}
 	}
 }
@@ -157,21 +137,21 @@ func addToList(obj DBSound) {
 	}
 
 	if index != -1 {
-		DBSoundList[index].enabled = obj.enabled
-		DBSoundList[index].command = obj.command
+		DBSoundList[index].Enabled = obj.Enabled
+		DBSoundList[index].Command = obj.Command
 
 		var index2 int
 		index2 = -1
 		for i := range DBSoundList {
-			if obj.command == DBSoundList[i].command {
+			if obj.Command == DBSoundList[i].Command {
 				index2 = i
 			}
 		}
 
-		if obj.enabled == "1" {
-			DBSoundList[index2].enabled = "1"
+		if obj.Enabled == "1" {
+			DBSoundList[index2].Enabled = "1"
 		} else {
-			DBSoundList[index2].enabled = "0"
+			DBSoundList[index2].Enabled = "0"
 		}
 
 		if index2 == -1 {
@@ -181,7 +161,7 @@ func addToList(obj DBSound) {
 	} else {
 		//If it dosent exist add it.
 		DBSoundList = append(DBSoundList, obj)
-		log.Println("added " + obj.command + " to the list")
+		log.Println("added " + obj.Command + " to the list")
 	}
 
 }
@@ -192,7 +172,7 @@ func loadSound(path string, command string) error {
 	var index int
 	index = -1
 	for i := range DBSoundList {
-		if DBSoundList[i].filepath == path {
+		if DBSoundList[i].Filepath == path {
 			index = i
 		}
 	}
@@ -247,7 +227,7 @@ func soundExist(command string) bool {
 	var index int
 	index = -1
 	for i := range DBSoundList {
-		if DBSoundList[i].command == command {
+		if DBSoundList[i].Command == command {
 			index = i
 		}
 	}
