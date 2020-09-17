@@ -1,7 +1,7 @@
 module TPUDISCORDBOT
 
 require (
-	github.com/bwmarrin/discordgo v0.20.1
+	github.com/bwmarrin/discordgo v0.22.0
 	github.com/go-sql-driver/mysql v1.4.0
 	github.com/gorilla/websocket v1.4.1 // indirect
 	github.com/jonas747/ogg v0.0.0-20161220051205-b4f6f4cf3757 // indirect
