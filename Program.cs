@@ -47,7 +47,7 @@ namespace TPUDISCORDBOT
             }
         }
 
-
+        /*
         //Edit object sound to a object containing info
         private async Task Say(IAudioClient connection, Object sound)
         {
@@ -102,5 +102,6 @@ namespace TPUDISCORDBOT
                 Console.WriteLine($"- {ex.StackTrace}");
             }
         }
+        */
     }
 }
