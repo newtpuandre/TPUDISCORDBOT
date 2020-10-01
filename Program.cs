@@ -12,6 +12,7 @@ namespace TPUDISCORDBOT
     {
 
         private DiscordSocketClient _client;
+        public DiscordSocketConfig _config;
 
         public static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
@@ -22,13 +23,13 @@ namespace TPUDISCORDBOT
             var appSettings = ConfigurationManager.AppSettings;
             var DiscordToken = appSettings.Get("DiscordKey");
 
+            //Config DiscordSocketClient.
+            _config = new DiscordSocketConfig { LogLevel = LogSeverity.Verbose };
 
-            _client = new DiscordSocketClient(new DiscordSocketConfig
-            {
-                LogLevel = LogSeverity.Verbose
-            });
+            //New DiscordSocketClient with the config.
+            _client = new DiscordSocketClient(_config);
 
-            _client.Log += Log;
+            _client.Log += Logger.Log;
             _client.MessageReceived += MessageReceived;
 
             await _client.LoginAsync(TokenType.Bot, DiscordToken);
@@ -46,11 +47,6 @@ namespace TPUDISCORDBOT
             }
         }
 
-        private Task Log(LogMessage msg)
-        {
-            Console.WriteLine(msg.ToString());
-            return Task.CompletedTask;
-        }
 
         //Edit object sound to a object containing info
         private async Task Say(IAudioClient connection, Object sound)
