@@ -1,9 +1,5 @@
 # TPU Discord bot
-A discord bot written in GO. Users can add and play sounds in a discord voice channel. All sounds are moderated by an administrator
 
-# Requirements
-* Go Version 1.11.0 or later
-* FFMPEG installed and working from PATH
+A discord bot previously written in GO. Now rewritten in .net!
 
-# Disclaimer
-The bot is provided as is. There are alot of spaghetti code and other weird solutions.
+Users can add and play sounds in a discord voice channel. All sounds are moderated by an administrator
