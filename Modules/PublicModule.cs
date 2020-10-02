@@ -1,6 +1,9 @@
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Audio;
 using Discord.Commands;
 using TPUDISCORDBOT.Services;
 
@@ -9,61 +12,49 @@ namespace TPUDISCORDBOT.Modules
     // Modules must be public and inherit from an IModuleBase
     public class PublicModule : ModuleBase<SocketCommandContext>
     {
-        // Dependency Injection will fill this value in for us
-        public PictureService PictureService { get; set; }
 
-        [Command("ping")]
-        [Alias("pong", "hello")]
-        public Task PingAsync()
-            => ReplyAsync("pong!");
-
-        [Command("cat")]
-        public async Task CatAsync()
+        [Command("join", RunMode = RunMode.Async)]
+        public async Task JoinChannel(IVoiceChannel channel = null)
         {
-            // Get a stream containing an image of a cat
-            var stream = await PictureService.GetCatPictureAsync();
-            // Streams must be seeked to their beginning before being uploaded!
-            stream.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(stream, "cat.png");
+            // Get the audio channel
+            channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
+            if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
+
+            // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
+            var audioClient = await channel.ConnectAsync();
+            await Say(audioClient);
+            await channel.DisconnectAsync();
+
         }
 
-        // Get info on a user, or the user who invoked the command if one is not specified
-        [Command("userinfo")]
-        public async Task UserInfoAsync(IUser user = null)
+        private static async Task Say(IAudioClient connection)
         {
-            user = user ?? Context.User;
+            try
+            {
+                await connection.SetSpeakingAsync(true); // send a speaking indicator
+                var sound = "./sample.mp3";
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "ffmpeg",
+                    Arguments = $@"-i ""{sound}"" -ac 2 -f s16le -ar 48000 pipe:1",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false
+                };
+                var ffmpeg = Process.Start(psi);
 
-            await ReplyAsync(user.ToString());
+                var output = ffmpeg.StandardOutput.BaseStream;
+                var discord = connection.CreatePCMStream(AudioApplication.Voice);
+                await output.CopyToAsync(discord);
+                await discord.FlushAsync();
+
+                await connection.SetSpeakingAsync(false); // we're not speaking anymore
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine($"- {ex.StackTrace}");
+            }
         }
 
-        // Ban a user
-        [Command("ban")]
-        [RequireContext(ContextType.Guild)]
-        // make sure the user invoking the command can ban
-        [RequireUserPermission(GuildPermission.BanMembers)]
-        // make sure the bot itself can ban
-        [RequireBotPermission(GuildPermission.BanMembers)]
-        public async Task BanUserAsync(IGuildUser user, [Remainder] string reason = null)
-        {
-            await user.Guild.AddBanAsync(user, reason: reason);
-            await ReplyAsync("ok!");
-        }
-
-        // [Remainder] takes the rest of the command's arguments as one argument, rather than splitting every space
-        [Command("echo")]
-        public Task EchoAsync([Remainder] string text)
-            // Insert a ZWSP before the text to prevent triggering other bots!
-            => ReplyAsync('\u200B' + text);
-
-        // 'params' will parse space-separated elements into a list
-        [Command("list")]
-        public Task ListAsync(params string[] objects)
-            => ReplyAsync("You listed: " + string.Join("; ", objects));
-
-        // Setting a custom ErrorMessage property will help clarify the precondition error
-        [Command("guild_only")]
-        [RequireContext(ContextType.Guild, ErrorMessage = "Sorry, this command must be ran from within a server, not a DM!")]
-        public Task GuildOnlyCommand()
-            => ReplyAsync("Nothing to see here!");
     }
 }
