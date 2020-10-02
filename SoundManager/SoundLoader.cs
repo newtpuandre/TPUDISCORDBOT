@@ -13,12 +13,6 @@ namespace TPUDISCORDBOT.SoundManager
 
         public static void writeList()
         {
-            var testModel = new SoundModel();
-            testModel.path = "test";
-            testModel.enabled = true;
-            testModel.command = "hei";
-            SoundManager.AddSound(testModel);
-
             string json = JsonConvert.SerializeObject(SoundManager.GetSounds().ToArray(), Formatting.Indented);
             File.WriteAllText(@soundlist, json);
         }
