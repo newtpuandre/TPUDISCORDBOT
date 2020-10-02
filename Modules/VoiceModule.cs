@@ -42,6 +42,20 @@ namespace TPUDISCORDBOT.Modules
 
         }
 
+        [Command("sounds")]
+        public async Task GetSoundList()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.WithTitle("TPUBOT Sound list");
+            builder.WithDescription("To play sound : !play <name>. Replace <name> with one of the names below.");
+            foreach (var item in SoundManager.SoundManager.GetList())
+            {
+                builder.AddField("Sound name", item.command);
+            }
+
+            await Context.Channel.SendMessageAsync("", false, builder.Build());
+        }
+
 
 
         private static async Task Say(IAudioClient connection, SoundModel sound)

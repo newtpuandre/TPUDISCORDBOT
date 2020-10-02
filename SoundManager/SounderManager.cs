@@ -30,6 +30,10 @@ namespace TPUDISCORDBOT.SoundManager
             return soundList.Find(x => x.command.ToLower() == command.ToLower());
         }
 
+        public static List<SoundModel> GetList()
+        {
+            return soundList;
+        }
         public static void SetList(List<SoundModel> list)
         {
             soundList = list;
