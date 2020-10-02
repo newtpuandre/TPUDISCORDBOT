@@ -1,107 +1,67 @@
-﻿using System;
+using System;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
+using Discord.Commands;
+using TPUDISCORDBOT.Services;
 using System.Configuration;
-using Discord.Audio;
-using System.Diagnostics;
 
 namespace TPUDISCORDBOT
 {
+
     class Program
     {
-
-        private DiscordSocketClient _client;
-        public DiscordSocketConfig _config;
-
-        public static void Main(string[] args)
+        // There is no need to implement IDisposable like before as we are
+        // using dependency injection, which handles calling Dispose for us.
+        static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
         {
-            //Read config from app.config
-            var appSettings = ConfigurationManager.AppSettings;
-            var DiscordToken = appSettings.Get("DiscordKey");
+            // You should dispose a service provider created using ASP.NET
+            // when you are finished using it, at the end of your app's lifetime.
+            // If you use another dependency injection framework, you should inspect
+            // its documentation for the best way to do this.
+            using (var services = ConfigureServices())
+            {
+                var client = services.GetRequiredService<DiscordSocketClient>();
 
-            //Config DiscordSocketClient.
-            _config = new DiscordSocketConfig { LogLevel = LogSeverity.Verbose };
+                client.Log += LogAsync;
+                services.GetRequiredService<CommandService>().Log += LogAsync;
+                var appSettings = ConfigurationManager.AppSettings;
+                var DiscordToken = appSettings.Get("DiscordKey");
 
-            //New DiscordSocketClient with the config.
-            _client = new DiscordSocketClient(_config);
+                // Tokens should be considered secret data and never hard-coded.
+                // We can read from the environment variable to avoid hardcoding.
+                await client.LoginAsync(TokenType.Bot, DiscordToken);
+                await client.StartAsync();
 
-            _client.Log += Logger.Log;
-            _client.MessageReceived += MessageReceived;
+                // Here we initialize the logic required to register our commands.
+                await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
 
-            await _client.LoginAsync(TokenType.Bot, DiscordToken);
-            await _client.StartAsync();
-
-            // Block this task until the program is closed.
-            await Task.Delay(-1);
+                await Task.Delay(Timeout.Infinite);
+            }
         }
 
-        private async Task MessageReceived(SocketMessage message)
+        private Task LogAsync(LogMessage log)
         {
-            if (message.Content == "!ping")
-            {
-                await message.Channel.SendMessageAsync("Pong!");
-            }
+            Console.WriteLine(log.ToString());
+
+            return Task.CompletedTask;
         }
 
-        /*
-        //Edit object sound to a object containing info
-        private async Task Say(IAudioClient connection, Object sound)
+        private ServiceProvider ConfigureServices()
         {
-            try
-            {
-                await connection.SetSpeakingAsync(true); // send a speaking indicator
-
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "ffmpeg",
-                    Arguments = $@"-i ""{sound.Filename}"" -ac 2 -f s16le -ar 48000 pipe:1",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
-                };
-                var ffmpeg = Process.Start(psi);
-
-                var output = ffmpeg.StandardOutput.BaseStream;
-                var discord = connection.CreatePCMStream(AudioApplication.Voice);
-                await output.CopyToAsync(discord);
-                await discord.FlushAsync();
-
-                await connection.SetSpeakingAsync(false); // we're not speaking anymore
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine($"- {ex.StackTrace}");
-            }
+            return new ServiceCollection()
+                .AddSingleton<DiscordSocketClient>()
+                .AddSingleton<CommandService>()
+                .AddSingleton<CommandHandlingService>()
+                .AddSingleton<HttpClient>()
+                .AddSingleton<PictureService>()
+                .BuildServiceProvider();
         }
-
-        //Edit object sound to a object containing info
-        private async Task ConnectToVoice(SocketVoiceChannel voiceChannel)
-        {
-            if (voiceChannel == null)
-                return;
-
-            try
-            {
-                Console.WriteLine($"Connecting to channel {voiceChannel.Id}");
-                var connection = await voiceChannel.ConnectAsync();
-                Console.WriteLine($"Connected to channel {voiceChannel.Id}");
-
-
-                await Task.Delay(1000);
-
-                await Say(connection, Object.Hello);
-            }
-            catch (Exception ex)
-            {
-                // Oh no, error
-                Console.WriteLine(ex.Message);
-                Console.WriteLine($"- {ex.StackTrace}");
-            }
-        }
-        */
     }
 }
