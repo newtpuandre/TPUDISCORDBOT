@@ -22,8 +22,7 @@ namespace TPUDISCORDBOT.Modules
             // Get the audio channel
             channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
             if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
-            if (command == null) { await Context.User.SendMessageAsync("Please provide a sound name. Example: !play name"); return; }
-
+            if (command == null) { await Context.User.SendMessageAsync("Please provide a sound name. Example: !play name. !sounds for a full list of available sounds."); return; }
 
             var sound = SoundManager.SoundManager.GetSound(command);
             if (sound == null)
@@ -32,11 +31,18 @@ namespace TPUDISCORDBOT.Modules
                 return;
             }
 
+            if (!sound.enabled)
+            {
+                await Context.User.SendMessageAsync("The sound you have requested is not enabled. Please tell TPU to activate it before trying again");
+            }
+
             var audioClient = await channel.ConnectAsync(); // Connect to channel
-            await Say(audioClient, sound);                         // Play sound
+            await Say(audioClient, sound);                  // Play sound
             await channel.DisconnectAsync();                // Disconnect from channel
 
         }
+
+
 
         private static async Task Say(IAudioClient connection, SoundModel sound)
         {

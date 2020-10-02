@@ -17,6 +17,12 @@ namespace TPUDISCORDBOT.SoundManager
         public static void AddSound(SoundModel item)
         {
             soundList.Add(item);
+            SoundLoader.writeList();
+        }
+
+        public static void UpdateSound(SoundModel item)
+        {
+
         }
 
         public static SoundModel GetSound(string command)
