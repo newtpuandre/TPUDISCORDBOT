@@ -14,9 +14,19 @@ namespace TPUDISCORDBOT.SoundManager
             return soundList;
         }
 
-        public static void addSound(SoundModel item)
+        public static void AddSound(SoundModel item)
         {
             soundList.Add(item);
+        }
+
+        public static SoundModel GetSound(string command)
+        {
+            return soundList.Find(x => x.command.ToLower() == command.ToLower());
+        }
+
+        public static void SetList(List<SoundModel> list)
+        {
+            soundList = list;
         }
 
     }

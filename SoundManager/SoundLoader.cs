@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -16,13 +17,13 @@ namespace TPUDISCORDBOT.SoundManager
             testModel.path = "test";
             testModel.enabled = true;
             testModel.command = "hei";
-            SoundManager.addSound(testModel);
+            SoundManager.AddSound(testModel);
 
             string json = JsonConvert.SerializeObject(SoundManager.GetSounds().ToArray(), Formatting.Indented);
             File.WriteAllText(@soundlist, json);
         }
 
-        public static List<SoundModel> GetList()
+        public static List<SoundModel> readList()
         {
             using (StreamReader r = new StreamReader(soundlist))
             {
