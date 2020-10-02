@@ -9,9 +9,12 @@ using TPUDISCORDBOT.Services;
 
 namespace TPUDISCORDBOT.Modules
 {
+
     // Modules must be public and inherit from an IModuleBase
-    public class PublicModule : ModuleBase<SocketCommandContext>
+    public class VoiceModule : ModuleBase<SocketCommandContext>
     {
+
+        private IAudioClient audioClient = null;
 
         [Command("join", RunMode = RunMode.Async)]
         public async Task JoinChannel(IVoiceChannel channel = null)
@@ -19,11 +22,13 @@ namespace TPUDISCORDBOT.Modules
             // Get the audio channel
             channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
             if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
+            if (audioClient != null) { await Context.Channel.SendMessageAsync("The bot is currently busy in another server. Try again shortly"); return; }
 
             // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
-            var audioClient = await channel.ConnectAsync();
+            audioClient = await channel.ConnectAsync();
             await Say(audioClient);
             await channel.DisconnectAsync();
+            audioClient = null;
 
         }
 
