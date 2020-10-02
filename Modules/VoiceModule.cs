@@ -58,8 +58,11 @@ namespace TPUDISCORDBOT.Modules
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
 
-
-
+        [Command("upload")]
+        public async Task UploadSound()
+        {
+            await Context.User.SendMessageAsync("Please upload the audio file here. I will give further instructions once the file is downloaded on my end.");
+        }
 
         private static async Task Say(IAudioClient connection, SoundModel sound)
         {
