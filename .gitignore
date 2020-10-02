@@ -363,3 +363,5 @@ FodyWeavers.xsd
 
 # Custom
 app.config
+/sounds
+/sounds/*
