@@ -7,6 +7,7 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using TPUDISCORDBOT.Services;
+using TPUDISCORDBOT.SoundManager;
 using System.Configuration;
 using System.Collections.Generic;
 
@@ -60,6 +61,7 @@ namespace TPUDISCORDBOT
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
+                .AddSingleton<SoundManager.SoundManager>()
                 .BuildServiceProvider();
         }
     }

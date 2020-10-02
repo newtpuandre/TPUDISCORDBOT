@@ -4,5 +4,7 @@ namespace TPUDISCORDBOT.Model
     {
         public string path { get; set; }
         public string command { get; set; }
+
+        public bool enabled { get; set; }
     }
 }
