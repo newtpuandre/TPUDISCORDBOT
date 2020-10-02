@@ -8,6 +8,7 @@ using Discord.WebSocket;
 using Discord.Commands;
 using TPUDISCORDBOT.Services;
 using System.Configuration;
+using System.Collections.Generic;
 
 namespace TPUDISCORDBOT
 {
