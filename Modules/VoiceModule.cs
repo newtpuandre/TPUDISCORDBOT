@@ -42,7 +42,9 @@ namespace TPUDISCORDBOT.Modules
 
         }
 
+
         [Command("sounds")]
+        [Alias("commands")]
         public async Task GetSoundList()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -55,6 +57,7 @@ namespace TPUDISCORDBOT.Modules
 
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
+
 
 
 
