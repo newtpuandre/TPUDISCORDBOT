@@ -34,6 +34,7 @@ namespace TPUDISCORDBOT.Modules
             if (!sound.enabled)
             {
                 await Context.User.SendMessageAsync("The sound you have requested is not enabled. Please tell TPU to activate it before trying again");
+                return;
             }
 
             var audioClient = await channel.ConnectAsync(); // Connect to channel
