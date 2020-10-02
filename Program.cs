@@ -22,6 +22,7 @@ namespace TPUDISCORDBOT
 
         public async Task MainAsync()
         {
+            SoundLoader.writeList();
             // You should dispose a service provider created using ASP.NET
             // when you are finished using it, at the end of your app's lifetime.
             // If you use another dependency injection framework, you should inspect
@@ -61,7 +62,6 @@ namespace TPUDISCORDBOT
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
-                .AddSingleton<SoundManager.SoundManager>()
                 .BuildServiceProvider();
         }
     }

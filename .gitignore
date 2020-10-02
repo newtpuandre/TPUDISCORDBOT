@@ -365,3 +365,4 @@ FodyWeavers.xsd
 app.config
 /sounds
 /sounds/*
+soundlist.json

@@ -4,15 +4,19 @@ using TPUDISCORDBOT.Model;
 
 namespace TPUDISCORDBOT.SoundManager
 {
-    public class SoundManager
+    public static class SoundManager
     {
 
-        private List<SoundModel> soundList;
-        private SoundLoader _loader;
-        public SoundManager()
+        private static List<SoundModel> soundList = new List<SoundModel>();
+
+        public static List<SoundModel> GetSounds()
         {
-            soundList = new List<SoundModel>();
-            _loader = new SoundLoader();
+            return soundList;
+        }
+
+        public static void addSound(SoundModel item)
+        {
+            soundList.Add(item);
         }
 
     }

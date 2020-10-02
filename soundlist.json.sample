@@ -1,0 +1,7 @@
+[
+  {
+    "path": "test",
+    "command": "hei",
+    "enabled": true
+  }
+]
