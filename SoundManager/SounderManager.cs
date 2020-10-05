@@ -25,6 +25,18 @@ namespace TPUDISCORDBOT.SoundManager
 
         }
 
+        public static bool ToggleSound(string command)
+        {
+            var index = soundList.FindIndex(x => x.command.ToLower() == command.ToLower());
+            if (index != -1)
+            {
+                soundList[index].enabled = !soundList[index].enabled;
+                SoundLoader.writeList();
+                return soundList[index].enabled;
+            }
+            return false;
+        }
+
         public static SoundModel GetSound(string command)
         {
             return soundList.Find(x => x.command.ToLower() == command.ToLower());
@@ -34,6 +46,7 @@ namespace TPUDISCORDBOT.SoundManager
         {
             return soundList;
         }
+
         public static void SetList(List<SoundModel> list)
         {
             soundList = list;

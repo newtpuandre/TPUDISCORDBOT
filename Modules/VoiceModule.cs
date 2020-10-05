@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Audio;
@@ -59,10 +61,43 @@ namespace TPUDISCORDBOT.Modules
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
 
-        [Command("upload")]
-        public async Task UploadSound()
+        [Command("toggle")]
+        public async Task ToggleSound(string command = null)
         {
-            await Context.User.SendMessageAsync("Please upload the audio file here. I will give further instructions once the file is downloaded on my end.");
+            //Check username
+            if (command != null && Context.User.Id == 132626622816845824)
+            {
+
+                var result = SoundManager.SoundManager.ToggleSound(command);
+                await Context.User.SendMessageAsync($"{command} state is now: {result}");
+
+            }
+            else
+            {
+                await Context.User.SendMessageAsync("Only TPU is able to enable commands");
+            }
+        }
+
+        [Command("upload", RunMode = RunMode.Async)]
+        public async Task UploadSound(string command = null)
+        {
+            if (command != null && Context.Message.Attachments.Count > 0)
+            {
+                await Context.User.SendMessageAsync("Please upload the file here and use the following command. !upload soundName");
+            }
+            if (Context.Message.Attachments.ElementAt(0).Filename.Contains(".mp3"))
+            {
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(Context.Message.Attachments.ElementAt(0).Url, "./" + command + ".mp3");
+                }
+                var temp = new SoundModel();
+                temp.command = command;
+                temp.path = "./" + command + ".mp3";
+                SoundManager.SoundManager.AddSound(temp);
+                await Context.User.SendMessageAsync("Sound is uploaded with command " + command + ". Tell TPU to enable the command");
+            }
+            //await Context.User.SendMessageAsync("Please upload the audio file here. I will give further instructions once the file is downloaded on my end.");
         }
 
         private static async Task Say(IAudioClient connection, SoundModel sound)
