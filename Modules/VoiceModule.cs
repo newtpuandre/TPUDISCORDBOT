@@ -54,8 +54,12 @@ namespace TPUDISCORDBOT.Modules
         [Command("stop")]
         public async Task Stop()
         {
-            await Program.audioClient.SetSpeakingAsync(false);
-            await Program.audioClient.StopAsync();
+            if (Program.audioClient != null)
+            {
+                await Program.audioClient.SetSpeakingAsync(false);
+                await Program.audioClient.StopAsync();
+                Program.audioClient = null;
+            }
         }
 
         private static async Task Say(IAudioClient connection, SoundModel sound)
@@ -77,7 +81,6 @@ namespace TPUDISCORDBOT.Modules
                 var discord = connection.CreatePCMStream(AudioApplication.Mixed);
                 await output.CopyToAsync(discord);
                 await discord.FlushAsync();
-
 
                 await connection.SetSpeakingAsync(false); // we're not speaking anymore
             }
