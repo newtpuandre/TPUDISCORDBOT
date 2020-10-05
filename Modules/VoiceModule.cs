@@ -81,9 +81,10 @@ namespace TPUDISCORDBOT.Modules
         [Command("upload", RunMode = RunMode.Async)]
         public async Task UploadSound(string command = null)
         {
-            if (command != null && Context.Message.Attachments.Count > 0)
+            if (command == null && Context.Message.Attachments.Count <= 0)
             {
                 await Context.User.SendMessageAsync("Please upload the file here and use the following command. !upload soundName");
+                return;
             }
             if (Context.Message.Attachments.ElementAt(0).Filename.Contains(".mp3"))
             {
