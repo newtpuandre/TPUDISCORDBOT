@@ -82,6 +82,7 @@ namespace TPUDISCORDBOT.Modules
             builder.AddField("!sounds", "!sounds");
             builder.AddField("!upload <name>", "!upload <name>");
             builder.AddField("!play <name>", "!play <name>");
+            builder.AddField("!stop", "!stop");
 
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }

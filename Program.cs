@@ -20,6 +20,7 @@ namespace TPUDISCORDBOT
 
         public static bool playingSound = false;
         public static IAudioClient audioClient;
+
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
 
