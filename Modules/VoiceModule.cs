@@ -47,7 +47,6 @@ namespace TPUDISCORDBOT.Modules
 
 
         [Command("sounds")]
-        [Alias("commands")]
         public async Task GetSoundList()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -57,6 +56,20 @@ namespace TPUDISCORDBOT.Modules
             {
                 builder.AddField("Sound name", item.command);
             }
+
+            await Context.Channel.SendMessageAsync("", false, builder.Build());
+        }
+
+        [Command("commands")]
+        [Alias("command")]
+        public async Task GetCommands()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.WithTitle("TPUBOT Command List");
+            builder.AddField("!commands", "!commands");
+            builder.AddField("!sounds", "!sounds");
+            builder.AddField("!upload <name>", "!upload <name>");
+            builder.AddField("!play <name>", "!play <name>");
 
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
@@ -98,7 +111,11 @@ namespace TPUDISCORDBOT.Modules
                 SoundManager.SoundManager.AddSound(temp);
                 await Context.User.SendMessageAsync("Sound is uploaded with command " + command + ". Tell TPU to enable the command");
             }
-            //await Context.User.SendMessageAsync("Please upload the audio file here. I will give further instructions once the file is downloaded on my end.");
+            else
+            {
+                await Context.User.SendMessageAsync("Only .mp3 files are allowed. Please convert it first");
+                return;
+            }
         }
 
         private static async Task Say(IAudioClient connection, SoundModel sound)

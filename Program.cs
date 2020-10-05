@@ -41,6 +41,8 @@ namespace TPUDISCORDBOT
                 await client.LoginAsync(TokenType.Bot, DiscordToken);
                 await client.StartAsync();
 
+                await client.SetGameAsync("!commands | !sounds");
+
                 // Here we initialize the logic required to register our commands.
                 await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
 
