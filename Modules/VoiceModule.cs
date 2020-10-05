@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -62,27 +63,72 @@ namespace TPUDISCORDBOT.Modules
             }
         }
 
+        public static byte[][] ReadOpus(SoundModel sound)
+        {
+            // Int16 opuslen 2bytes
+            //byte[][] temp;
+            List<byte[]> byteList = new List<byte[]>();
+
+            BinaryReader binReader = new BinaryReader(File.Open(sound.path, FileMode.Open));
+            try
+            {
+                while (binReader.BaseStream.Position != binReader.BaseStream.Length)
+                {
+                    Console.WriteLine("Reading bytes");
+                    var readBytes = binReader.ReadBytes(4);
+                    byteList.Add(readBytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            binReader.Close();
+            return byteList.ToArray();
+        }
+
         private static async Task Say(IAudioClient connection, SoundModel sound)
         {
             try
             {
                 await connection.SetSpeakingAsync(true); // send a speaking indicator
-
-                var psi = new ProcessStartInfo
+                if (sound.path.Contains(".mp3"))
                 {
-                    FileName = "ffmpeg",
-                    Arguments = $@"-i ""{sound.path}"" -ac 2 -f s16le -ar 48000 pipe:1",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
-                };
-                var ffmpeg = Process.Start(psi);
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = "ffmpeg",
+                        Arguments = $@"-i ""{sound.path}"" -ac 2 -f s16le -ar 48000 pipe:1",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false
+                    };
+                    var ffmpeg = Process.Start(psi);
 
-                var output = ffmpeg.StandardOutput.BaseStream;
-                var discord = connection.CreatePCMStream(AudioApplication.Mixed);
-                await output.CopyToAsync(discord);
-                await discord.FlushAsync();
+                    var output = ffmpeg.StandardOutput.BaseStream;
+                    var discord = connection.CreatePCMStream(AudioApplication.Mixed);
+                    await output.CopyToAsync(discord);
+                    await discord.FlushAsync();
+
+                }
+                else
+                { //Bad DCA section
+                    byte[][] dcaFile = ReadOpus(sound);
+                    Console.WriteLine("DCAFILE Length " + dcaFile.Length);
+                    var discord = connection.CreatePCMStream(AudioApplication.Mixed);
+                    int i = 0;
+                    MemoryStream stream = new MemoryStream();
+                    foreach (var item in dcaFile)
+                    {
+                        await stream.WriteAsync(item);
+                        Console.WriteLine("Write new data . " + i++ + " Item length. " + item.Length);
+                    }
+                    await stream.CopyToAsync(discord);
+                    await discord.FlushAsync();
+                    //discord.Flush();
+
+                }
 
                 await connection.SetSpeakingAsync(false); // we're not speaking anymore
+                Program.playingSound = false;
             }
             catch (Exception ex)
             {
