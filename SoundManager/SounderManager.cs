@@ -20,11 +20,6 @@ namespace TPUDISCORDBOT.SoundManager
             SoundLoader.writeList();
         }
 
-        public static void UpdateSound(SoundModel item)
-        {
-
-        }
-
         public static bool ToggleSound(string command)
         {
             var index = soundList.FindIndex(x => x.command.ToLower() == command.ToLower());

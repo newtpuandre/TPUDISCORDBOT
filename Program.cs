@@ -10,6 +10,7 @@ using TPUDISCORDBOT.Services;
 using TPUDISCORDBOT.SoundManager;
 using System.Configuration;
 using System.Collections.Generic;
+using Discord.Audio;
 
 namespace TPUDISCORDBOT
 {
@@ -17,6 +18,8 @@ namespace TPUDISCORDBOT
     class Program
     {
 
+        public static bool playingSound = false;
+        public static IAudioClient audioClient;
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
 

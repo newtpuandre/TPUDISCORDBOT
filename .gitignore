@@ -366,3 +366,4 @@ app.config
 /sounds
 /sounds/*
 soundlist.json
+out

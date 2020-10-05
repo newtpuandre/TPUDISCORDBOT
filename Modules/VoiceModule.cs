@@ -21,6 +21,11 @@ namespace TPUDISCORDBOT.Modules
         [Command("play", RunMode = RunMode.Async)]
         public async Task JoinChannel(string command = null, IVoiceChannel channel = null)
         {
+            if (Program.playingSound)
+            {
+                await Context.User.SendMessageAsync("I am currently busy. Try again shortly");
+                return;
+            }
             // Get the audio channel
             channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
             if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
@@ -38,13 +43,20 @@ namespace TPUDISCORDBOT.Modules
                 await Context.User.SendMessageAsync("The sound you have requested is not enabled. Please tell TPU to activate it before trying again");
                 return;
             }
-
+            Program.playingSound = true;
             var audioClient = await channel.ConnectAsync(); // Connect to channel
+            Program.audioClient = audioClient;
             await Say(audioClient, sound);                  // Play sound
             await channel.DisconnectAsync();                // Disconnect from channel
-
+            Program.playingSound = false;
         }
 
+        [Command("stop")]
+        public async Task Stop()
+        {
+            await Program.audioClient.SetSpeakingAsync(false);
+            await Program.audioClient.StopAsync();
+        }
 
         [Command("sounds")]
         public async Task GetSoundList()
