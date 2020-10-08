@@ -21,11 +21,11 @@ namespace TPUDISCORDBOT.Modules
             {
                 using (var client = new WebClient())
                 {
-                    client.DownloadFile(Context.Message.Attachments.ElementAt(0).Url, "./" + command + ".mp3");
+                    client.DownloadFile(Context.Message.Attachments.ElementAt(0).Url, "./sounds/" + command + ".mp3");
                 }
                 var temp = new SoundModel();
                 temp.command = command;
-                temp.path = "./" + command + ".mp3";
+                temp.path = "./sounds/" + command + ".mp3";
                 SoundManager.SoundManager.AddSound(temp);
                 await Context.User.SendMessageAsync("Sound is uploaded with command " + command + ". Tell TPU to enable the command");
             }
