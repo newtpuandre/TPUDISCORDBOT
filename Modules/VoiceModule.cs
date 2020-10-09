@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -67,7 +68,6 @@ namespace TPUDISCORDBOT.Modules
             try
             {
                 await connection.SetSpeakingAsync(true); // send a speaking indicator
-
                 var psi = new ProcessStartInfo
                 {
                     FileName = "ffmpeg",
@@ -83,6 +83,7 @@ namespace TPUDISCORDBOT.Modules
                 await discord.FlushAsync();
 
                 await connection.SetSpeakingAsync(false); // we're not speaking anymore
+                Program.playingSound = false;
             }
             catch (Exception ex)
             {
