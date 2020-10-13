@@ -32,7 +32,6 @@ namespace TPUDISCORDBOT.Modules
             else
             {
                 await Context.User.SendMessageAsync("Only .mp3 files are allowed. Please convert it first");
-                return;
             }
         }
         [Command("toggle")]

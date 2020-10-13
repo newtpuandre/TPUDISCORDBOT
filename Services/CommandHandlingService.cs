@@ -36,15 +36,15 @@ namespace TPUDISCORDBOT.Services
         public async Task MessageReceivedAsync(SocketMessage rawMessage)
         {
             // Ignore system messages, or messages from other bots
-            if (!(rawMessage is SocketUserMessage message)) return;
-            if (message.Source != MessageSource.User) return;
+            if (!(rawMessage is SocketUserMessage message)) { return; }
+            if (message.Source != MessageSource.User) { return; }
 
             // This value holds the offset where the prefix ends
             var argPos = 0;
             // Perform prefix check. You may want to replace this with
             // (!message.HasCharPrefix('!', ref argPos))
             // for a more traditional command format like !help.
-            if (!message.HasCharPrefix('!', ref argPos)) return;
+            if (!message.HasCharPrefix('!', ref argPos)) { return; }
 
             var context = new SocketCommandContext(_discord, message);
             // Perform the execution of the command. In this method,
@@ -59,11 +59,16 @@ namespace TPUDISCORDBOT.Services
         {
             // command is unspecified when there was a search failure (command not found); we don't care about these errors
             if (!command.IsSpecified)
+            {
                 return;
+
+            }
 
             // the command was successful, we don't care about this result, unless we want to log that a command succeeded.
             if (result.IsSuccess)
+            {
                 return;
+            }
 
             // the command failed, let's notify the user that something happened.
             await context.Channel.SendMessageAsync($"error: {result}");
