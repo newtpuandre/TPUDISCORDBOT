@@ -1,6 +1,5 @@
 <configuration>
     <appSettings>
         <add key="DiscordKey" value=""/>
-        <add key="CommandIndicator" value=""/>
     </appSettings>
 </configuration>

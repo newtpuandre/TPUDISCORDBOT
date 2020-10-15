@@ -23,9 +23,14 @@ namespace TPUDISCORDBOT.Modules
                 {
                     client.DownloadFile(Context.Message.Attachments.ElementAt(0).Url, "./sounds/" + command + ".mp3");
                 }
-                var temp = new SoundModel();
-                temp.command = command;
-                temp.path = "./sounds/" + command + ".mp3";
+
+                var temp = new SoundModel()
+                {
+                    command = command,
+                    path = "./sounds/" + command + ".mp3",
+                };
+                //temp.command = command;
+                //temp.path = "./sounds/" + command + ".mp3";
                 SoundManager.SoundManager.AddSound(temp);
                 await Context.User.SendMessageAsync("Sound is uploaded with command " + command + ". Tell TPU to enable the command");
             }
@@ -34,6 +39,7 @@ namespace TPUDISCORDBOT.Modules
                 await Context.User.SendMessageAsync("Only .mp3 files are allowed. Please convert it first");
             }
         }
+
         [Command("toggle")]
         public async Task ToggleSound(string command = null)
         {
@@ -50,6 +56,7 @@ namespace TPUDISCORDBOT.Modules
                 await Context.User.SendMessageAsync("Only TPU is able to enable commands");
             }
         }
+
         [Command("commands")]
         [Alias("command")]
         public async Task GetCommands()
